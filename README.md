@@ -1,99 +1,68 @@
-# YouTube Music Desktop App
-### Now with a Fresh new Codebase 😉
+# YouTube Music Desktop — Built-in AdBlock
+
+An unofficial YouTube Music desktop app with **ad blocking built in and enabled by default**. No browser extension is required.
+
+This is [JusNickel's fork](https://github.com/JusNickel/ytmdesktop) of [YTMDesktop](https://github.com/ytmdesktop/ytmdesktop). The original desktop features, including Discord Rich Presence, remain available.
 
 ![YouTube Music Desktop App](.github/images/readme_main_app.png)
 
-[![Discord][discord-img]][discord-url]
-[![Gitmoji][gitmoji-img]][gitmoji-url]
-[![GitHub license][license-img]][license-url]
-[![GitHub release][release-img]][release-url]
-[![Download][download-img]][download-url]
+## Download for Windows
 
-<!--
-TODO: Write guides for v2. While these may still be helpful they are geared towards v1
-#### 📖 Guide:
-1. [How to use](https://github.com/ytmdesktop/ytmdesktop/wiki/How-use)
-2. [FAQ](https://github.com/ytmdesktop/ytmdesktop/wiki/FAQ)
--->
+**[Download the Windows x64 installer](https://github.com/JusNickel/ytmdesktop/releases/latest/download/YouTube-Music-AdBlock-Setup.exe)** · [All releases and checksums](https://github.com/JusNickel/ytmdesktop/releases)
 
-# ⬇️ Download at
-<a href="https://repology.org/project/ytmdesktop/versions">
-	<img type="image/svg" align="right" src="https://repology.org/badge/vertical-allrepos/ytmdesktop.svg" alt="Packaging status"/>
-</a>
+1. Close YouTube Music Desktop completely, including its tray icon.
+2. Run **YouTube-Music-AdBlock-Setup.exe**.
+3. Open YouTube Music Desktop and play music. Ad blocking starts enabled.
 
-#### Windows
-<!--
-### UPDATE THESE PLATFORMS ###
-- Chocolatey: ```choco install ytmdesktop```
--->
-- Winget: ```winget install "YouTube Music Desktop App"``` or ```winget install Ytmdesktop.Ytmdesktop```
-- Scoop: ```scoop bucket add extras``` then ```scoop install ytmdesktop``` (Community Maintained)
-- Binaries: <https://github.com/ytmdesktop/ytmdesktop/releases>
+The installer updates the existing YouTube Music Desktop App and preserves its profile. It is currently unsigned. A SHA-256 checksum is included with each Windows release.
 
-#### Linux
-<!--
-### UPDATE THESE PLATFORMS ###
-- Snap: <https://snapcraft.io/youtube-music-desktop-app>
--->
-- Arch Linux (AUR): <https://aur.archlinux.org/packages/ytmdesktop> (Community Maintained)
-- Binaries: <https://github.com/ytmdesktop/ytmdesktop/releases>
+Windows x64 is the currently tested installer platform. Linux and macOS users can build from source; binaries for those platforms are not included in this fork's Windows release. Winget, Scoop, Homebrew, and upstream download links install the original project rather than this ad-blocking fork.
 
-#### Mac
-- Brew: ```brew install --cask ytmdesktop-youtube-music``` (Community Maintained)
-- Binaries: <https://github.com/ytmdesktop/ytmdesktop/releases>
+## Built-in ad blocking
 
-# Developing
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js (v20)](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+- **Network filtering:** the Ghostery Electron engine filters advertising requests in the music browser session.
+- **Playback ad skipping:** a helper skips ads explicitly identified by YouTube's player, without changing ordinary song playback speed or volume.
+- **Cached filters:** filters are stored locally, with a small offline fallback and background refresh.
+- **Your choice:** turn **Settings → Playback → Block ads** on or off. Reload the music page after changing it.
+
+YouTube changes can affect blocking, so removal of every advertisement is not guaranteed. See [ADBLOCK.md](ADBLOCK.md) for behavior, verification, and limitations.
+
+## Build from source
+
+Use Node.js 24 or newer and the pnpm version specified in `package.json`.
 
 ```sh
-# Clone this repository
-git clone https://github.com/ytmdesktop/ytmdesktop.git
-# Go into the directory
+git clone https://github.com/JusNickel/ytmdesktop.git
 cd ytmdesktop
-```
-##### And:
-```sh
-# If you do not have Yarn Installed / New to Node as a whole you can enable Yarn with:
 corepack enable
-
-# Install dependencies
-yarn install
-# Run the app
-yarn start
+pnpm install --frozen-lockfile
+pnpm start
 ```
 
-# Building the Project
-To build for your platform you need to run `yarn make`, however please see the information below regarding the required additionally Software, Tools and Packages which are needed to successfully package into a nice installer file.
+To build an installer for your platform:
 
-## Windows
-To download the full suite of Tools/Software needed to build the app it is recommended to install the suite of build tools that electron provide which includes Visual Studio, Python and other tools.
+```sh
+pnpm make
+```
 
-`npm i -g @electron/build-tools`
+The Windows installer is generated at `out/make/squirrel.windows/x64/YouTube-Music-AdBlock-Setup.exe`. On Windows, the project's approved dependency build scripts initialize Electron and the installer's compression tool during `pnpm install`.
 
-This will start downloading and installing, and may require a few prompts here and there to finalise everything.
+On Linux, packaging requires `fakeroot` and `dpkg` for Debian packages, or `rpm-build` for RPM packages. Platform builds other than Windows x64 have not been validated for this fork.
 
-<!--
-TODO: Fill this information in
-## MacOS
-*to do*
--->
+## Verify the ad blocker
 
-## Linux
-Building the project on Linux only requires you to install:
-- For building on Debian based Linux Distros like Ubuntu, you will need to install `fakeroot` and `dpkg`
-- For building on RedHat based Linux Distros like Fedora, you will need to install `rpm` or `rpm-build`
+```sh
+pnpm test:adblock
+pnpm test:adblock:electron
+pnpm package
+pnpm test:adblock:packaged
+```
 
-*please note that by default both packages are built if you try building this application on a linux distro*
+The packaged check defaults to the Windows x64 output path. Pass an alternative `app.asar` path as an argument for another platform. Existing upstream type-check issues are documented in [ADBLOCK.md](ADBLOCK.md).
 
-<!--
-### Note to the note, I suspect this has been fixed now, testing myself I was able to run the software without anything extra, although did have to sepecify `--disable-gpu` to run.
-**Note:** If you're using Windows Subsystem for Linux (WSL2), [see this guide][more] or use `node` from the command prompt. -->
+## License and attribution
 
-<!--
-Project currently doesn't have Locales, so Ignore this for now.
-## To contribute for your own language
-Navigate to [ytmdesktop-locales](https://github.com/ytmdesktop/ytmdesktop-locales) and follow the instructions there.
--->
+This fork retains the original project's GPL-3.0-only license. See [LICENSE](LICENSE). The Ghostery dependency includes its own MPL-2.0 license and notices; filter data is subject to its upstream licenses. YouTube and YouTube Music belong to their respective owners; this project is not affiliated with Google or YouTube.
 
 ## Contributors
 
@@ -129,15 +98,3 @@ A Thank you to all the contributors throughout the project, without their work t
 [<img alt="mkotb" src="https://avatars.githubusercontent.com/u/6364146?v=4&s=240" width="120" height="120">](https://github.com/mkotb)
 [<img alt="chaoky" src="https://avatars.githubusercontent.com/u/9826702?v=4&s=240" width="120" height="120">](https://github.com/chaoky)
 [<img alt="ElectricalBoy" src="https://avatars.githubusercontent.com/u/15651807?v=4&s=240" width="120" height="120">](https://github.com/ElectricalBoy)
-
-[discord-img]: https://img.shields.io/badge/Discord-JOIN-GREEN.svg?style=for-the-badge&logo=discord
-[discord-url]: https://discord.gg/88P2n2a
-[gitmoji-img]: https://img.shields.io/badge/Gitmoji-STANDARD-FFDD67.svg?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJncmluLXRvbmd1ZS13aW5rIiBjbGFzcz0ic3ZnLWlubGluZS0tZmEgZmEtZ3Jpbi10b25ndWUtd2luayBmYS13LTE2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OTYgNTEyIj48cGF0aCBmaWxsPSIjRkZERDY3IiBkPSJNMzQ0IDE4NGEyNCAyNCAwIDEwMCA0OCAyNCAyNCAwIDEwMC00OHpNMjQ4IDhhMjQ4IDI0OCAwIDAwLTg3IDQ4MGMtNi0xMi05LTI2LTktNDB2LTQ1Yy0yNS0xNy00My0zOS00OC02NC0yLTEyIDEwLTIyIDIxLTE4IDMwIDEwIDc1IDE1IDEyMyAxNXM5My01IDEyMy0xNWMxMi00IDIzIDYgMjEgMTgtNCAyNS0yMyA0Ny00OCA2M3Y0NmMwIDE0LTMgMjgtOSA0MEEyNDggMjQ4IDAgMDAyNDggOHptLTU2IDIyNWwtOS04Yy0xNS0xNC00Ny0xNC02MSAwbC0xMCA4Yy04IDctMjIgMC0yMC0xMSA0LTI1IDM0LTQyIDYwLTQyczU2IDE3IDYwIDQyYzIgMTEtMTIgMTgtMjAgMTF6bTE1MiAzOWE2NCA2NCAwIDExMC0xMjggNjQgNjQgMCAwMTAgMTI4em0tNTEgMTAzYy0xNC03LTMxIDItMzQgMTdsLTIgOGMtMiA5LTE2IDktMTggMGwtMS04Yy00LTE1LTIxLTI0LTM1LTE3bC0xOSA5djYzYzAgMzUgMjggNjUgNjMgNjUgMzYgMCA2NS0yOSA2NS02NHYtNjRsLTE5LTl6Ii8+PC9zdmc+
-[gitmoji-url]: https://gitmoji.carloscuesta.me
-[license-img]: https://img.shields.io/github/license/ytmdesktop/ytmdesktop.svg?style=for-the-badge&logo=librarything
-[license-url]: https://github.com/ytmdesktop/ytmdesktop/blob/master/LICENSE
-[release-img]: https://img.shields.io/github/release/ytmdesktop/ytmdesktop.svg?style=for-the-badge&logo=flattr
-[release-url]: https://GitHub.com/ytmdesktop/ytmdesktop/releases/
-[download-img]: https://img.shields.io/github/downloads/ytmdesktop/ytmdesktop/total.svg?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgZGF0YS1wcmVmaXg9ImZhcyIgZGF0YS1pY29uPSJjbG91ZC1kb3dubG9hZC1hbHQiIGNsYXNzPSJzdmctaW5saW5lLS1mYSBmYS1jbG91ZC1kb3dubG9hZC1hbHQgZmEtdy0yMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNjQwIDUxMiI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTUzOCAyMjdjNC0xMSA2LTIzIDYtMzVhOTYgOTYgMCAwMC0xNDktODAgMTYwIDE2MCAwIDAwLTI5OSA4OCAxNDQgMTQ0IDAgMDA0OCAyODBoMzY4YTEyOCAxMjggMCAwMDI2LTI1M3ptLTEzMyA4OEwyOTkgNDIxYy02IDYtMTYgNi0yMiAwTDE3MSAzMTVjLTEwLTEwLTMtMjcgMTItMjdoNjVWMTc2YzAtOSA3LTE2IDE2LTE2aDQ4YzkgMCAxNiA3IDE2IDE2djExMmg2NWMxNSAwIDIyIDE3IDEyIDI3eiIvPjwvc3ZnPg==
-[download-url]: https://github.com/ytmdesktop/ytmdesktop/releases/
-[more]: https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/
