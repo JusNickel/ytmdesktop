@@ -39,6 +39,8 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
+      setupExe: "YouTube-Music-AdBlock-Setup.exe",
+      title: "YouTube Music AdBlock",
       iconUrl: `https://raw.githubusercontent.com/ytmdesktop/ytmdesktop/137c4e5c175c8c125cbcca9a5312611f80cd3bd9/src/assets/icons/ytmd.ico`
     }),
     new MakerZIP({}, ['darwin']),

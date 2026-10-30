@@ -56,3 +56,12 @@ Before releasing, check signed-out and signed-in playback, Google sign-in,
 playlist transitions, pause/resume, app restart, and toggling the setting.
 The original GPL-3.0-only license remains; Ghostery's dependency includes its own
 MPL-2.0 license and notices. Filter data remains subject to its upstream licenses.
+
+## Windows installer
+
+The fork's Windows build is version 2.1.1. Run `pnpm make` to produce
+`out/make/squirrel.windows/x64/YouTube-Music-AdBlock-Setup.exe`.
+It retains the original application identity so installing it updates the existing
+YouTube Music Desktop App and preserves its profile. A desktop shortcut can be
+named **YouTube Music (AdBlock)** and target the installed Squirrel `Update.exe`
+with `--processStart youtube-music-desktop-app.exe`.
