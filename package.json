@@ -22,7 +22,8 @@
     "lint:fix": "oxlint --fix && oxfmt --write",
     "typecheck": "tsc --noEmit",
     "test:adblock": "node --test tests/adblock.test.cjs",
-    "test:adblock:electron": "node node_modules/electron/cli.js tests/adblock-electron.cjs"
+    "test:adblock:electron": "node node_modules/electron/cli.js tests/adblock-electron.cjs",
+    "test:adblock:packaged": "node node_modules/electron/cli.js tests/adblock-packaged.cjs"
   },
   "peerDependencies": {
     "electron-winstaller": "^5.4.0"

@@ -1,6 +1,6 @@
 # Built-in ad blocking
 
-This fork adds **Settings → Playback → Block ads**, enabled by default.
+This fork adds **Settings â†’ Playback â†’ Block ads**, enabled by default.
 Reload the music page after changing it so injected filters are refreshed.
 
 The Ghostery Electron engine filters ad requests in the YouTube Music session
@@ -32,6 +32,7 @@ Install dependencies using the project's pnpm configuration, then run:
 pnpm test:adblock
 pnpm test:adblock:electron
 pnpm package
+pnpm test:adblock:packaged
 pnpm typecheck
 ```
 
@@ -40,8 +41,15 @@ It verifies blocked ad requests, allowed content, toggling, a corrupt cache, and
 shutdown during an update. Its result is also written to
 `.verification/adblock-result.json`.
 
-On the initial implementation, the Windows package and both ad blocker checks
-passed. Type checking reports eight existing errors in the companion-server and
+The packaged-runtime check resolves the blocker and its cosmetic preload from
+inside `app.asar` and verifies ad blocking with those packaged dependencies.
+Pass an alternative archive path as its first argument on other platforms.
+Forge's Vite plugin excludes `node_modules`, so the packaging hook explicitly
+copies the external blocker and its dependency tree, including license files.
+
+The Windows package, playback checks, Electron session checks, and packaged-runtime
+check passed after fixing the initially missing packaged dependency. The rebuilt
+Windows executable also opened successfully and loaded the music view. Type checking reports eight existing errors in the companion-server and
 Last.fm integrations, reproduced against the unchanged base commit.
 
 Before releasing, check signed-out and signed-in playback, Google sign-in,
