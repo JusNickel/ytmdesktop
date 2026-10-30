@@ -1,7 +1,7 @@
 {
   "name": "youtube-music-desktop-app",
   "productName": "YouTube Music Desktop App",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "description": "An unofficial cross platform desktop app for YouTube Music",
   "keywords": [],
@@ -20,7 +20,10 @@
     "release": "electron-forge release",
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:adblock": "node --test tests/adblock.test.cjs",
+    "test:adblock:electron": "node node_modules/electron/cli.js tests/adblock-electron.cjs",
+    "test:adblock:packaged": "node node_modules/electron/cli.js tests/adblock-packaged.cjs"
   },
   "peerDependencies": {
     "electron-winstaller": "^5.4.0"
@@ -50,6 +53,7 @@
     "@fastify/cors": "^11.3.1",
     "@fastify/rate-limit": "^11.2.1",
     "@fastify/type-provider-typebox": "^6.3.0",
+    "@ghostery/adblocker-electron": "^2.20.3",
     "@sinclair/typebox": "^0.34.52",
     "conf": "^15.1.0",
     "electron-log": "^5.4.4",

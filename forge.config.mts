@@ -8,6 +8,7 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import fs from "node:fs/promises";
 import path from "node:path";
+import { copyRuntimeDependencies } from "./scripts/copy-runtime-dependencies.mjs";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -38,6 +39,8 @@ const config: ForgeConfig = {
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
+      setupExe: "YouTube-Music-AdBlock-Setup.exe",
+      title: "YouTube Music AdBlock",
       iconUrl: `https://raw.githubusercontent.com/ytmdesktop/ytmdesktop/137c4e5c175c8c125cbcca9a5312611f80cd3bd9/src/assets/icons/ytmd.ico`
     }),
     new MakerZIP({}, ['darwin']),
@@ -140,6 +143,7 @@ const config: ForgeConfig = {
   ],
   hooks: {
     async packageAfterCopy(_config, buildPath, _electronVersion, platform, arch) {
+      await copyRuntimeDependencies("@ghostery/adblocker-electron", __dirname, buildPath);
       const srcRoot = path.join(__dirname, "node_modules");
       const destRoot = path.join(buildPath, "node_modules");
       

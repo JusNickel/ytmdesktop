@@ -10,6 +10,8 @@ import MemoryStore from "../memorystore";
 import { MemoryStoreSchema } from "~shared/store/schema";
 import AppWindowManager from "../windowmanager";
 
+import { MusicAdBlocker } from "./adblocker";
+
 export type YTMViewManagerEventMap = {
   "status-changed": [];
   "view-recreated": [];
@@ -60,6 +62,7 @@ export default class YTMViewManager extends EventEmitterService<YTMViewManagerEv
   ];
 
   private ytmView?: AppView;
+  private adBlocker?: MusicAdBlocker;
   private hooksReady = false;
   private hookError: Error | null = null;
   private setupCompletionFlags = 0;
@@ -116,7 +119,9 @@ export default class YTMViewManager extends EventEmitterService<YTMViewManagerEv
     //#endregion
   }
 
-  public override onTerminated() {}
+  public override onTerminated() {
+    this.adBlocker?.stop();
+  }
 
   public isInitialized() {
     return this.initialized;
@@ -126,6 +131,20 @@ export default class YTMViewManager extends EventEmitterService<YTMViewManagerEv
     const configStore = this.getDependency(ConfigStore);
     const stateManager = this.getDependency(StateManager);
     const memoryStore = this.getDependency(MemoryStore<MemoryStoreSchema>);
+
+    // Attach before autoCreate can start loading the music page.
+    if (!this.adBlocker) {
+      this.adBlocker = new MusicAdBlocker(
+        session.fromPartition(
+          app.isPackaged ? 'persist:ytmview' : 'persist:ytmview-dev',
+        ),
+        path.join(app.getPath('userData'), 'adblock-engine.bin'),
+      );
+      this.adBlocker.setEnabled(configStore.get('adblock.enabled'));
+      configStore.onDidChange('adblock', (value) =>
+        this.adBlocker?.setEnabled(value?.enabled ?? true),
+      );
+    }
 
     this.setStatus(YTMViewStatus.Loading);
 

@@ -31,6 +31,8 @@ const safeStorage = window.ytmd.safeStorage;
 
 const safeStorageAvailable = ref<boolean>(await memoryStore.get("safeStorageAvailable"));
 
+const adblockEnabled = ref<boolean>((await store.get("adblock")).enabled);
+
 const general: StoreSchema["general"] = await store.get("general");
 const appearance: StoreSchema["appearance"] = await store.get("appearance");
 const playback: StoreSchema["playback"] = await store.get("playback");
@@ -80,6 +82,7 @@ const lastFMSessionKey = ref<string>(lastFM.sessionKey);
 const scrobblePercent = ref<number>(lastFM.scrobblePercent);
 
 store.onDidAnyChange(async newState => {
+  adblockEnabled.value = newState.adblock.enabled;
   disableHardwareAcceleration.value = newState.general.disableHardwareAcceleration;
   hideToTrayOnClose.value = newState.general.hideToTrayOnClose;
   showNotificationOnSongChange.value = newState.general.showNotificationOnSongChange;
@@ -168,6 +171,7 @@ async function memorySettingsChanged() {
 }
 
 async function settingsChanged() {
+  store.set("adblock.enabled", adblockEnabled.value);
   store.set("general.hideToTrayOnClose", hideToTrayOnClose.value);
   store.set("general.showNotificationOnSongChange", showNotificationOnSongChange.value);
   store.set("general.startOnBoot", startOnBoot.value);
@@ -438,6 +442,13 @@ window.ytmd.handleUpdateDownloaded(() => {
           v-if="currentTab === 3"
           class="playback-tab"
         >
+          <YTMDSetting
+            v-model="adblockEnabled"
+            type="checkbox"
+            name="Block ads"
+            description="Filter ads and skip detected playback ads. Reload the music page after changing this setting. YouTube changes may affect blocking."
+            @change="settingsChanged"
+          />
           <YTMDSetting
             v-model="continueWhereYouLeftOff"
             name="Continue where you left off"
