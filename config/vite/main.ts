@@ -9,7 +9,7 @@ export default defineConfig(config => {
         build: {
             outDir: ".vite/main",
             rolldownOptions: {
-                external: ["xosms"]
+                external: ["xosms", "@ghostery/adblocker-electron"]
             }
         },
         define: {

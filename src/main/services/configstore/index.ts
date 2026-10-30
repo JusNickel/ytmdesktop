@@ -27,6 +27,9 @@ export default class ConfigStore extends Service {
           version: 1,
           appVersion: app.getVersion()
         },
+        adblock: {
+          enabled: true
+        },
         general: {
           disableHardwareAcceleration: false,
           hideToTrayOnClose: false,

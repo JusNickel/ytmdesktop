@@ -145,3 +145,6 @@ vite.config.ts.timestamp-*
 
 # Electron-Forge
 out/
+
+# Local verification reports
+.verification/

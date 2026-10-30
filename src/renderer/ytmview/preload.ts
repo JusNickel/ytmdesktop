@@ -18,8 +18,24 @@ import Store from "../store-ipc/store";
 import { StoreSchema } from "~shared/store/schema";
 
 import scriptsRaw from "./scripts?raw";
+import { skipPlaybackAd } from "./skip-playback-ad";
 
 const store = new Store<StoreSchema>();
+
+// Polling also covers in-page navigation and replacement player elements.
+let adblockEnabled = false;
+store.get('adblock').then((value) => {
+  adblockEnabled = value.enabled;
+});
+store.onDidAnyChange((state) => {
+  adblockEnabled = state.adblock.enabled;
+});
+const adSkipTimer = setInterval(() => {
+  if (adblockEnabled) skipPlaybackAd(document);
+}, 500);
+window.addEventListener('unload', () => clearInterval(adSkipTimer), {
+  once: true,
+});
 
 let protectedApiBound = false;
 window.addEventListener("message", async event => {

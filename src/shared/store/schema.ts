@@ -9,6 +9,9 @@ export type StoreSchema = {
     version: 1;
     appVersion: string;
   };
+  adblock: {
+    enabled: boolean;
+  };
   general: {
     disableHardwareAcceleration: boolean;
     hideToTrayOnClose: boolean;
