@@ -1,6 +1,6 @@
 # Built-in ad blocking
 
-This fork adds **Settings â†’ Playback â†’ Block ads**, enabled by default.
+This fork adds **Settings → Playback → Block ads**, enabled by default.
 Reload the music page after changing it so injected filters are refreshed.
 
 The Ghostery Electron engine filters ad requests in the YouTube Music session
