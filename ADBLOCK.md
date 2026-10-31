@@ -65,3 +65,7 @@ It retains the original application identity so installing it updates the existi
 YouTube Music Desktop App and preserves its profile. A desktop shortcut can be
 named **YouTube Music (AdBlock)** and target the installed Squirrel `Update.exe`
 with `--processStart youtube-music-desktop-app.exe`.
+
+## Renderer injection error handling
+
+The pinned Ghostery Electron wrapper is patched to await cosmetic script and stylesheet injection promises inside their existing error handlers. A failed filter script is reported locally rather than escaping as an unhandled main-process rejection that triggers the Music app watchdog. The patch covers both CommonJS and ESM distributions; tests force both a CSS and a script rejection and verify that later scripts still run.

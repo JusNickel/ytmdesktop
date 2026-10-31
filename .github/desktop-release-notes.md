@@ -1,3 +1,5 @@
+Fixes a Music-app crash caused by unhandled renderer script/CSS injection rejections in the ad-blocker dependency. Failed cosmetic injections are now handled locally while normal filtering and playback continue.
+
 Windows x64 installers and Linux x86_64 RPMs for the two separate apps:
 
 - **YouTube-Desktop-AdBlock-Setup.exe** — regular YouTube videos, desktop controls, settings, floating mini player, and optional Discord/Vesktop Rich Presence.

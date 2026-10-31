@@ -1,7 +1,7 @@
 {
   "name": "youtube-music-desktop-app",
   "productName": "YouTube Music Desktop App",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "private": true,
   "description": "An unofficial cross platform desktop app for YouTube Music",
   "keywords": [],
@@ -21,7 +21,7 @@
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt --write",
     "typecheck": "tsc --noEmit",
-    "test:adblock": "node --test tests/adblock.test.cjs",
+    "test:adblock": "node --test tests/adblock.test.cjs tests/adblock-errors.test.cjs",
     "test:adblock:electron": "node node_modules/electron/cli.js tests/adblock-electron.cjs",
     "test:adblock:packaged": "node node_modules/electron/cli.js tests/adblock-packaged.cjs",
     "make:fedora": "electron-forge make --targets=rpm",

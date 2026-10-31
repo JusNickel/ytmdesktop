@@ -8,3 +8,4 @@ minimumReleaseAgeStrict: true
 nodeLinker: hoisted
 patchedDependencies:
   electron-installer-redhat: patches/electron-installer-redhat.patch
+  '@ghostery/adblocker-electron@2.20.3': patches/ghostery-renderer-rejections.patch
