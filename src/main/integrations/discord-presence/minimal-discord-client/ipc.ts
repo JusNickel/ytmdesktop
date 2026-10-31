@@ -11,6 +11,7 @@ export enum OPCode {
 
 export default class IPCClient extends EventEmitter {
   private socket!: Socket;
+  private pending = Buffer.alloc(0);
 
   constructor() {
     super();
@@ -29,18 +30,20 @@ export default class IPCClient extends EventEmitter {
     this.socket.on("error", error => {
       this.emit("error", error);
     });
+    this.pending = Buffer.alloc(0);
     this.socket.on("data", (buffer: Buffer) => {
-      try {
-        const op = buffer.readInt32LE(0);
-        const length = buffer.readInt32LE(4);
-        const json = JSON.parse(buffer.toString("utf-8", 8, 8 + length));
-
-        this.emit("data", {
-          op,
-          json
-        });
-      } catch {
-        /* invalid json provided, ignore */
+      this.pending = Buffer.concat([this.pending, buffer]);
+      while (this.pending.length >= 8) {
+        const op = this.pending.readInt32LE(0);
+        const length = this.pending.readInt32LE(4);
+        if (length < 0 || length > 1024 * 1024) { this.socket.destroy(); return; }
+        if (this.pending.length < 8 + length) return;
+        const payload = this.pending.subarray(8, 8 + length);
+        this.pending = this.pending.subarray(8 + length);
+        let json: unknown;
+        try { json = JSON.parse(payload.toString("utf-8")); }
+        catch { continue; }
+        this.emit("data", op, json);
       }
     });
   }

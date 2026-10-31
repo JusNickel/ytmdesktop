@@ -1,0 +1,322 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, 'Noto Sans', system-ui, sans-serif;
+  background: #131416;
+  color: #f5f5f6;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  border-radius: 7px;
+  height: 32px;
+  min-width: 34px;
+  font-size: 19px;
+}
+button:hover {
+  background: #ffffff14;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #ff526d;
+  outline-offset: 2px;
+}
+header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 24px;
+  background: #1d1e22;
+  border-bottom: 1px solid #ffffff0d;
+  app-region: drag;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.brand strong span {
+  font-weight: 400;
+  color: #a5a6ad;
+}
+.logo {
+  display: grid;
+  place-items: center;
+  background: #ff3655;
+  border-radius: 7px;
+  width: 27px;
+  height: 21px;
+  font-size: 12px;
+}
+.drag {
+  flex: 1;
+}
+nav,
+.tools {
+  display: flex;
+  gap: 3px;
+  app-region: no-drag;
+}
+.close:hover {
+  background: #c62840;
+}
+main {
+  height: calc(100vh - 166px);
+}
+footer {
+  height: 110px;
+  background: #1d1e22;
+  border-top: 1px solid #ffffff0d;
+  padding: 13px 22px;
+}
+.track {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.track > div {
+  min-width: 0;
+}
+.track strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 550;
+}
+.track #author {
+  display: block;
+  font-size: 11px;
+  color: #8f929d;
+  margin-top: 3px;
+}
+.badge {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #b7c8b8;
+  white-space: nowrap;
+}
+.player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.player button {
+  font-size: 16px;
+  height: 30px;
+  min-width: 27px;
+}
+.player .play {
+  background: #ff3655;
+  border-radius: 50%;
+  width: 30px;
+  color: white;
+  font-size: 13px;
+}
+.player span {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: #a5a6ad;
+}
+.player input {
+  accent-color: #ff3655;
+  cursor: pointer;
+  height: 4px;
+}
+#seek {
+  flex: 1;
+  min-width: 30px;
+}
+#volume {
+  width: 75px;
+}
+#settings {
+  position: fixed;
+  inset: 56px 0 110px;
+  background: #131416;
+  overflow: auto;
+  padding: 26px;
+}
+#settings[hidden] {
+  display: none;
+}
+.settings-card {
+  max-width: 620px;
+  margin: auto;
+}
+.settings-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.eyebrow {
+  color: #ff6d85;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+h1 {
+  font-size: 30px;
+  font-weight: 650;
+  margin: 10px 0;
+}
+.intro {
+  color: #999da7;
+  font-size: 13px;
+  margin: 0 0 24px;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid #ffffff0d;
+}
+.setting strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 550;
+}
+.setting small {
+  display: block;
+  font-size: 11px;
+  color: #999da7;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.setting input {
+  appearance: none;
+  width: 34px;
+  height: 19px;
+  min-width: 34px;
+  background: #454650;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.setting input:after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: left 0.15s;
+}
+.setting input:checked {
+  background: #ff3655;
+}
+.setting input:checked:after {
+  left: 18px;
+}
+.connection {
+  font-size: 10px;
+  color: #999da7;
+  margin-top: 9px;
+}
+.mini-card {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #ffffff12;
+  border-radius: 12px;
+  background: #1c1d21;
+}
+.mini-card strong {
+  font-size: 14px;
+}
+.mini-card p {
+  font-size: 12px;
+  color: #999da7;
+  line-height: 1.6;
+}
+.primary {
+  font-size: 12px;
+  background: #ff3655;
+  padding: 0 16px;
+}
+.primary:hover {
+  background: #ff526d;
+}
+.hint {
+  font-size: 10px;
+  color: #747884;
+  line-height: 1.8;
+  margin-top: 20px;
+}
+#message {
+  padding: 20px;
+  color: #a5a6ad;
+  font-size: 13px;
+}
+.mini header {
+  height: 32px;
+  padding: 0 6px;
+  gap: 5px;
+}
+.mini .brand strong {
+  font-size: 11px;
+}
+.mini .brand strong span,
+.mini nav,
+.mini #settings-button,
+.mini [data-command='minimize'],
+.mini [data-command='maximize'] {
+  display: none;
+}
+.mini .logo {
+  width: 20px;
+  height: 16px;
+  font-size: 9px;
+}
+.mini .tools button {
+  height: 26px;
+  font-size: 17px;
+}
+.mini main {
+  height: calc(100vh - 104px);
+}
+.mini footer {
+  height: 72px;
+  padding: 7px 12px;
+}
+.mini .track strong {
+  font-size: 11px;
+}
+.mini #author,
+.mini .badge,
+.mini #volume,
+.mini .player [data-command='previous'],
+.mini .player [data-command='next'],
+.mini .player [data-command='mute'] {
+  display: none;
+}
+.mini .player {
+  gap: 8px;
+  margin-top: 5px;
+}
+.mini .player button {
+  height: 24px;
+  min-width: 24px;
+  width: 24px;
+}
+.mini .player .play {
+  font-size: 10px;
+}

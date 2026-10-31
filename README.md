@@ -1,4 +1,4 @@
-# YouTube Music Desktop — Built-in AdBlock
+# YouTube Desktop & YouTube Music — Built-in AdBlock
 
 An unofficial YouTube Music desktop app with **ad blocking built in and enabled by default**. No browser extension is required.
 
@@ -6,9 +6,11 @@ This is [JusNickel's fork](https://github.com/JusNickel/ytmdesktop) of [YTMDeskt
 
 ![YouTube Music Desktop App](.github/images/readme_main_app.png)
 
-## Download for Windows
+## Downloads
 
-**[Download the Windows x64 installer](https://github.com/JusNickel/ytmdesktop/releases/latest/download/YouTube-Music-AdBlock-Setup.exe)** · [All releases and checksums](https://github.com/JusNickel/ytmdesktop/releases)
+**[Download the YouTube video Windows x64 installer](https://github.com/JusNickel/ytmdesktop/releases/latest/download/YouTube-Desktop-AdBlock-Setup.exe)**
+
+**[Download the YouTube Music Windows x64 installer](https://github.com/JusNickel/ytmdesktop/releases/latest/download/YouTube-Music-AdBlock-Setup.exe)** · [All releases and checksums](https://github.com/JusNickel/ytmdesktop/releases)
 
 1. Close YouTube Music Desktop completely, including its tray icon.
 2. Run **YouTube-Music-AdBlock-Setup.exe**.
@@ -16,7 +18,46 @@ This is [JusNickel's fork](https://github.com/JusNickel/ytmdesktop) of [YTMDeskt
 
 The installer updates the existing YouTube Music Desktop App and preserves its profile. It is currently unsigned. A SHA-256 checksum is included with each Windows release.
 
-Windows x64 is the currently tested installer platform. Linux and macOS users can build from source; binaries for those platforms are not included in this fork's Windows release. Winget, Scoop, Homebrew, and upstream download links install the original project rather than this ad-blocking fork.
+Releases include Windows x64 installers for both apps and Linux x86_64 RPMs. The desktop release workflow builds and checks the packages before publishing them. Windows installers are unsigned; interactive Windows installation and every live YouTube account configuration are not covered by the smoke tests. macOS builds are not included in these releases. Winget, Scoop, Homebrew, and upstream download links install the original project rather than this ad-blocking fork.
+
+## Fedora RPMs and regular YouTube videos
+
+Build the original music app on Fedora (Node.js 24+, pinned pnpm):
+
+```sh
+sudo dnf install rpm-build
+pnpm install --frozen-lockfile
+pnpm make:fedora
+```
+
+For the separate **YouTube Desktop AdBlock** video app:
+
+```sh
+pnpm start:youtube
+pnpm make:youtube:fedora
+```
+
+Both RPMs are produced in `out/make/rpm/x64/`. Copy each RPM before making
+another variant, because Forge clears the make directory. Install with
+`sudo dnf install ./<package>.rpm`.
+
+The video app opens regular YouTube, including search, subscriptions, watch
+pages and Shorts. Use **Navigate** for Home/Back/Forward/Reload and **Playback
+→ Block ads** to toggle blocking. It uses a separate profile and executable,
+so it can coexist with the music app. It reuses the network filter engine and
+explicit playback-ad skipping without loading the YouTube Music page hooks.
+The video app has its own desktop controls and Settings panel. Use the mini-player button or Ctrl+M for an always-on-top floating player; switching keeps the same video view playing. Settings includes ad blocking, always-on-top mode, and opt-in Discord Rich Presence. Discord shares the current video title/channel while playing and clears the activity when paused. Discord or Vesktop must be running. Native and Flatpak sockets are detected, including Vesktop’s sandbox runtime socket. Other music-specific integrations remain in the music app.
+
+Check the video-specific navigation rules and packaged startup with:
+
+```sh
+pnpm test:youtube
+node node_modules/electron/cli.js tests/youtube-electron.cjs
+```
+
+The startup test uses a local fixture, an isolated profile, and a sandboxed
+preload. Live YouTube playback, Google sign-in, and every advertisement are
+not covered by that test. For a Windows x64 video installer, run `pnpm make:youtube:windows` on Windows. For the Music installer, run `pnpm make:windows`. Windows artifacts are generated in `out/make/squirrel.windows/x64/`. The two installers use separate installation identities and profiles.
 
 ## Built-in ad blocking
 
@@ -47,7 +88,7 @@ pnpm make
 
 The Windows installer is generated at `out/make/squirrel.windows/x64/YouTube-Music-AdBlock-Setup.exe`. On Windows, the project's approved dependency build scripts initialize Electron and the installer's compression tool during `pnpm install`.
 
-On Linux, packaging requires `fakeroot` and `dpkg` for Debian packages, or `rpm-build` for RPM packages. Platform builds other than Windows x64 have not been validated for this fork.
+On Linux, packaging requires `fakeroot` and `dpkg` for Debian packages, or `rpm-build` for RPM packages. The video app has also been validated on Fedora 44, including the actual executable extracted from the RPM.
 
 ## Verify the ad blocker
 
@@ -98,3 +139,5 @@ A Thank you to all the contributors throughout the project, without their work t
 [<img alt="mkotb" src="https://avatars.githubusercontent.com/u/6364146?v=4&s=240" width="120" height="120">](https://github.com/mkotb)
 [<img alt="chaoky" src="https://avatars.githubusercontent.com/u/9826702?v=4&s=240" width="120" height="120">](https://github.com/chaoky)
 [<img alt="ElectricalBoy" src="https://avatars.githubusercontent.com/u/15651807?v=4&s=240" width="120" height="120">](https://github.com/ElectricalBoy)
+
+The first in-page navigation to a video is automatically refreshed once to initialize the player. Subsequent videos keep normal in-page navigation.
