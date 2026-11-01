@@ -11,8 +11,11 @@ function visible(element: HTMLElement): boolean {
       element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))
   );
 }
-function findAd(document: Document) {
-  const player = document.querySelector<HTMLElement>('#movie_player');
+function findAd(document: Document, activePlayer?: HTMLElement | null) {
+  const player =
+    activePlayer === undefined
+      ? document.querySelector<HTMLElement>('#movie_player')
+      : activePlayer;
   if (!player) return null;
   const skip = [
     ...player.querySelectorAll<HTMLButtonElement>(skipSelectors),
@@ -22,11 +25,17 @@ function findAd(document: Document) {
     [...player.querySelectorAll<HTMLElement>(adMarkers)].some(visible);
   return skip || marked ? { player, skip } : null;
 }
-export function isPlaybackAd(document: Document): boolean {
-  return findAd(document) !== null;
+export function isPlaybackAd(
+  document: Document,
+  activePlayer?: HTMLElement | null,
+): boolean {
+  return findAd(document, activePlayer) !== null;
 }
-export function skipPlaybackAd(document: Document) {
-  const ad = findAd(document);
+export function skipPlaybackAd(
+  document: Document,
+  activePlayer?: HTMLElement | null,
+) {
+  const ad = findAd(document, activePlayer);
   if (!ad) return;
   if (ad.skip) {
     ad.skip.click();

@@ -140,4 +140,4 @@ A Thank you to all the contributors throughout the project, without their work t
 [<img alt="chaoky" src="https://avatars.githubusercontent.com/u/9826702?v=4&s=240" width="120" height="120">](https://github.com/chaoky)
 [<img alt="ElectricalBoy" src="https://avatars.githubusercontent.com/u/15651807?v=4&s=240" width="120" height="120">](https://github.com/ElectricalBoy)
 
-The first in-page navigation to a video is automatically refreshed once to initialize the player. Subsequent videos keep normal in-page navigation.
+The first in-page navigation to an ordinary video is automatically refreshed once to initialize the player. Shorts preserves its scrolling feed and routes wheel/trackpad gestures through the feed navigation controls. Playback controls follow the visible reel. The video app uses network filtering and explicit playback-ad skipping; cosmetic page-script injections are disabled on YouTube because they can break Shorts initialization. The Music app retains its existing cosmetic filtering.

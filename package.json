@@ -1,7 +1,7 @@
 {
   "name": "youtube-music-desktop-app",
   "productName": "YouTube Music Desktop App",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "private": true,
   "description": "An unofficial cross platform desktop app for YouTube Music",
   "keywords": [],
@@ -27,7 +27,7 @@
     "make:fedora": "electron-forge make --targets=rpm",
     "start:youtube": "node scripts/forge-youtube.mjs start",
     "make:youtube:fedora": "node scripts/forge-youtube.mjs make --targets=rpm",
-    "test:youtube": "node --test tests/youtube-navigation.test.cjs tests/youtube-state.test.cjs tests/first-video.test.cjs",
+    "test:youtube": "node --test tests/youtube-navigation.test.cjs tests/youtube-state.test.cjs tests/first-video.test.cjs tests/shorts-player.test.cjs tests/shorts-wheel.test.cjs",
     "make:youtube:windows": "node scripts/forge-youtube.mjs make --platform=win32 --arch=x64 --targets=squirrel",
     "make:windows": "electron-forge make --platform=win32 --arch=x64 --targets=squirrel"
   },

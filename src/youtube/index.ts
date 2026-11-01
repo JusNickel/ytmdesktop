@@ -263,6 +263,7 @@ async function createApp() {
   blocker = new MusicAdBlocker(
     browserSession,
     path.join(profile, 'adblock-engine.bin'),
+    true,
   );
   blocker.setEnabled(settings.adblock);
   presence = new VideoPresence(broadcast);

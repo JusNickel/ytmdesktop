@@ -42,3 +42,42 @@ test('cosmetic script and stylesheet failures are handled without an unhandled r
     console.warn = originalWarn;
   }
 });
+
+test('video compatibility mode skips cosmetic hooks without disabling network filters', async () => {
+  const { loadTypeScript } = require('./load-typescript.cjs');
+  const { MusicAdBlocker } = loadTypeScript(
+    'src/main/services/ytmviewmanager/adblocker.ts',
+  );
+  const blocker = new MusicAdBlocker(
+    {},
+    require('node:path').join(
+      require('node:os').tmpdir(),
+      'ytmd-nonexistent-cosmetic-fixture',
+    ),
+    true,
+  );
+  let calls = 0;
+  blocker.engine.getCosmeticsFilters = () => {
+    calls++;
+    return { active: true, styles: '', scripts: [] };
+  };
+  await blocker.engine.onInjectCosmeticFilters(
+    {
+      sender: { getURL: () => 'https://www.youtube.com/shorts/fixture' },
+      frameId: 1,
+      processId: 1,
+    },
+    'about:blank',
+  );
+  assert.equal(calls, 0);
+  assert.equal(blocker.engine.config.loadNetworkFilters, true);
+  await blocker.engine.onInjectCosmeticFilters(
+    {
+      sender: { getURL: () => 'https://example.com/' },
+      frameId: 1,
+      processId: 1,
+    },
+    'https://example.com/',
+  );
+  assert.equal(calls, 1);
+});

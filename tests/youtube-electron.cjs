@@ -97,7 +97,8 @@ app.whenReady().then(() => {
     .protocol.handle('https', (request) => {
       if (
         request.url !== 'https://www.youtube.com/' &&
-        request.url !== 'https://www.youtube.com/watch?v=fixture123'
+        request.url !== 'https://www.youtube.com/watch?v=fixture123' &&
+        request.url !== 'https://www.youtube.com/shorts/shortA'
       )
         return new Response('', { status: 404 });
       return new Response(
@@ -247,6 +248,64 @@ app
     video.on('did-finish-load', () => {
       documentLoads++;
     });
+    await video.executeJavaScript(
+      "history.pushState({}, '', '/shorts/shortA')",
+    );
+
+    await video.executeJavaScript(`
+      const old = document.querySelector('video'); old.id='old-reel'; old.muted=false; old.style.cssText='position:fixed;top:-600px;width:100px;height:100px';
+      const active = document.createElement('div'); active.id='shorts-player'; active.className='html5-video-player';
+      active.innerHTML='<video id="active-reel" style="position:fixed;top:20px;left:20px;width:100px;height:100px"></video>';
+      const surface=document.createElement('ytd-shorts'); surface.append(active);
+      const next=document.createElement('button');next.ariaLabel='Next video';next.id='fixture-next-short';
+      next.onclick=()=>{document.documentElement.dataset.shortSteps=String(Number(document.documentElement.dataset.shortSteps||0)+1);};surface.append(next);
+      const comments=document.createElement('div');comments.id='comments';surface.append(comments);
+      document.body.append(surface);
+    `);
+    await sleep(600);
+    assert.equal(
+      documentLoads,
+      0,
+      'entering Shorts preserves its feed document',
+    );
+    await main.webContents.executeJavaScript(
+      'document.querySelector("[data-command=mute]").click()',
+    );
+    await until(
+      () =>
+        video.executeJavaScript('document.getElementById("active-reel").muted'),
+      'controls follow the visible Shorts player',
+    );
+    assert.equal(
+      await video.executeJavaScript(
+        'document.getElementById("old-reel").muted',
+      ),
+      false,
+    );
+    await video.executeJavaScript(
+      "history.pushState({}, '', '/shorts/shortB')",
+    );
+    await sleep(300);
+    assert.equal(documentLoads, 0, 'scrolling Shorts must not reload the feed');
+    const wheelHandled = await video.executeJavaScript(
+      `(()=>{const event=new WheelEvent('wheel',{deltaY:650,bubbles:true,cancelable:true});document.getElementById('active-reel').dispatchEvent(event);return event.defaultPrevented;})()`,
+    );
+    assert.equal(
+      wheelHandled,
+      true,
+      'native feed scroll is replaced with a navigation action',
+    );
+    assert.equal(
+      await video.executeJavaScript(
+        'document.documentElement.dataset.shortSteps',
+      ),
+      '1',
+    );
+    const commentsHandled = await video.executeJavaScript(
+      `(()=>{const event=new WheelEvent('wheel',{deltaY:650,bubbles:true,cancelable:true});document.getElementById('comments').dispatchEvent(event);return event.defaultPrevented;})()`,
+    );
+    assert.equal(commentsHandled, false, 'comment scrolling is left alone');
+
     await video.executeJavaScript(
       'history.pushState({}, "", "/watch?v=fixture123")',
     );

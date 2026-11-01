@@ -7,9 +7,10 @@ export class FirstVideoNavigation {
   public observe(url: string, inPage: boolean): boolean {
     if (this.initialized || !isYouTubePage(url)) return false;
     const location = new URL(url);
+    // Shorts owns a scrolling/recycled-player lifecycle and must not receive
+    // the ordinary watch-page refresh workaround.
     const video =
-      (location.pathname === '/watch' && !!location.searchParams.get('v')) ||
-      /^\/shorts\/[^/]+/.test(location.pathname);
+      location.pathname === '/watch' && !!location.searchParams.get('v');
     if (!video) return false;
     this.initialized = true;
     return inPage;

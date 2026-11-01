@@ -23,6 +23,7 @@ export class MusicAdBlocker {
   public constructor(
     private readonly musicSession: Session,
     private readonly cachePath: string,
+    private readonly skipYouTubeCosmetics = false,
   ) {
     try {
       if (existsSync(cachePath)) {
@@ -33,6 +34,26 @@ export class MusicAdBlocker {
     } catch (error) {
       log.warn('Ad blocker cache unavailable; using offline filters', error);
     }
+    this.configureCosmetics(this.engine);
+  }
+
+  // Video-app compatibility: injected page scripts can break Shorts feed
+  // initialization. Network filtering and explicit playback-ad skipping remain.
+  private configureCosmetics(engine: ElectronBlocker) {
+    if (!this.skipYouTubeCosmetics) return;
+    const inject = engine.onInjectCosmeticFilters.bind(engine);
+    engine.onInjectCosmeticFilters = async (event, url, message) => {
+      for (const value of [event.sender.getURL(), url]) {
+        try {
+          const location = new URL(value);
+          if (['youtube.com', 'www.youtube.com'].includes(location.hostname))
+            return;
+        } catch {
+          /* Ignore non-page iframe URLs. */
+        }
+      }
+      return inject(event, url, message);
+    };
   }
 
   public setEnabled(enabled: boolean) {
@@ -49,9 +70,10 @@ export class MusicAdBlocker {
 
   private async refreshFilters() {
     try {
-      const engine = await ElectronBlocker.fromPrebuiltAdsOnly(url =>
+      const engine = await ElectronBlocker.fromPrebuiltAdsOnly((url) =>
         fetch(url, { signal: AbortSignal.timeout(10_000) }),
       );
+      this.configureCosmetics(engine);
       if (this.stopped) return;
       if (this.enabled) this.engine.disableBlockingInSession(this.musicSession);
       this.engine = engine;

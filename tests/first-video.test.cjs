@@ -53,9 +53,12 @@ test('a first full video load already initializes the player', () => {
     false,
   );
 });
-test('shorts also get a single first SPA refresh', () => {
+test('Shorts scrolling never triggers the regular-video refresh workaround', () => {
   const first = new FirstVideoNavigation();
-  assert.equal(first.observe('https://www.youtube.com/shorts/one', true), true);
+  assert.equal(
+    first.observe('https://www.youtube.com/shorts/one', true),
+    false,
+  );
   assert.equal(
     first.observe('https://www.youtube.com/shorts/two', true),
     false,
