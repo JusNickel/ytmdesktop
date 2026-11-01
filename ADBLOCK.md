@@ -65,3 +65,11 @@ It retains the original application identity so installing it updates the existi
 YouTube Music Desktop App and preserves its profile. A desktop shortcut can be
 named **YouTube Music (AdBlock)** and target the installed Squirrel `Update.exe`
 with `--processStart youtube-music-desktop-app.exe`.
+
+## Renderer injection error handling
+
+The pinned Ghostery Electron wrapper is patched to await cosmetic script and stylesheet injection promises inside their existing error handlers. A failed filter script is reported locally rather than escaping as an unhandled main-process rejection that triggers the Music app watchdog. The patch covers both CommonJS and ESM distributions; tests force both a CSS and a script rejection and verify that later scripts still run.
+
+## Shorts compatibility
+
+The video app suppresses cosmetic script/style injection on YouTube pages, including callbacks from embedded frames. These injections could prevent the Shorts feed from advancing. Network request filtering and explicit playback-ad skipping remain active. Music keeps its default filtering behavior. Wheel gestures in the Shorts surface use the native feed navigation buttons with a gesture cooldown; comments, dialogs, and horizontal gestures retain their normal scrolling. The active visible reel supplies playback telemetry and receives controls.

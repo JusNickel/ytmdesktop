@@ -1,18 +1,47 @@
-// Only act when YouTube explicitly marks its player as showing an advertisement.
-// Never change playback speed, volume, or the current song's position.
-export function skipPlaybackAd(document: Document) {
-  const player = document.querySelector(
-    '#movie_player.ad-showing, #movie_player.ad-interrupting',
+// Match explicit player ad UI, including layouts that no longer set ad-showing.
+// Never infer an ad from a video's length, title, or a persistent ad-created class.
+const skipSelectors =
+  '.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .ytp-skip-ad-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-slot button';
+const adMarkers =
+  '.ytp-ad-simple-ad-badge, .ytp-ad-duration-remaining, .ytp-ad-preview-container, .ytp-ad-text';
+function visible(element: HTMLElement): boolean {
+  return (
+    element.getClientRects().length > 0 &&
+    (typeof element.checkVisibility !== 'function' ||
+      element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }))
   );
-  if (!player) return;
-  const skip = player.querySelector<HTMLButtonElement>(
-    '.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .ytp-skip-ad-button',
-  );
-  if (skip && !skip.disabled && skip.getClientRects().length > 0) {
-    skip.click();
+}
+function findAd(document: Document, activePlayer?: HTMLElement | null) {
+  const player =
+    activePlayer === undefined
+      ? document.querySelector<HTMLElement>('#movie_player')
+      : activePlayer;
+  if (!player) return null;
+  const skip = [
+    ...player.querySelectorAll<HTMLButtonElement>(skipSelectors),
+  ].find((button) => !button.disabled && visible(button));
+  const marked =
+    player.matches('.ad-showing, .ad-interrupting') ||
+    [...player.querySelectorAll<HTMLElement>(adMarkers)].some(visible);
+  return skip || marked ? { player, skip } : null;
+}
+export function isPlaybackAd(
+  document: Document,
+  activePlayer?: HTMLElement | null,
+): boolean {
+  return findAd(document, activePlayer) !== null;
+}
+export function skipPlaybackAd(
+  document: Document,
+  activePlayer?: HTMLElement | null,
+) {
+  const ad = findAd(document, activePlayer);
+  if (!ad) return;
+  if (ad.skip) {
+    ad.skip.click();
     return;
   }
-  const video = player.querySelector<HTMLVideoElement>('video');
+  const video = ad.player.querySelector<HTMLVideoElement>('video');
   if (
     video &&
     Number.isFinite(video.duration) &&
@@ -22,7 +51,7 @@ export function skipPlaybackAd(document: Document) {
     try {
       video.currentTime = video.duration;
     } catch {
-      // Some ad streams do not support seeking. Leave those to the filter engine.
+      /* Some ad streams cannot seek. Keep waiting for a real skip button. */
     }
   }
 }

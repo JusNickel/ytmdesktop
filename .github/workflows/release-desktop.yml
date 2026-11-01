@@ -1,0 +1,113 @@
+name: Desktop installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['release/desktop-*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-installers-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'JusNickel/ytmdesktop'
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [music, youtube]
+        os: [windows-2025, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@v3
+        with:
+          runtime: node@24
+          require-lockfile: true
+          cache: true
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test player helpers
+        run: |
+          pnpm test:adblock
+          pnpm test:youtube
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm libdbus-1-dev pkg-config xvfb
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Build Music Windows installer
+        if: matrix.variant == 'music' && runner.os == 'Windows'
+        run: pnpm make:windows
+      - name: Build YouTube Windows installer
+        if: matrix.variant == 'youtube' && runner.os == 'Windows'
+        run: pnpm make:youtube:windows
+      - name: Build Music RPM
+        if: matrix.variant == 'music' && runner.os == 'Linux'
+        run: pnpm make:fedora
+      - name: Build YouTube RPM
+        if: matrix.variant == 'youtube' && runner.os == 'Linux'
+        run: pnpm make:youtube:fedora
+      - name: Verify packaged ad blocker on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $product = if ('${{ matrix.variant }}' -eq 'youtube') { 'YouTube Desktop AdBlock' } else { 'YouTube Music Desktop App' }
+          node node_modules/electron/cli.js tests/adblock-packaged.cjs "out/$product-win32-x64/resources/app.asar"
+          if ($LASTEXITCODE -ne 0) { throw 'Packaged ad blocker verification failed' }
+      - name: Verify actual YouTube Windows executable
+        if: runner.os == 'Windows' && matrix.variant == 'youtube'
+        run: node tests/youtube-installed.cjs "out/YouTube Desktop AdBlock-win32-x64/youtube-desktop-adblock.exe"
+      - name: Verify actual YouTube Linux executable
+        if: runner.os == 'Linux' && matrix.variant == 'youtube'
+        run: xvfb-run -a node tests/youtube-installed.cjs "out/YouTube Desktop AdBlock-linux-x64/youtube-desktop-adblock"
+      - name: Collect Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item out/make/squirrel.windows/x64/*Setup.exe dist/
+          if (-not (Get-ChildItem dist/*.exe)) { throw 'Installer missing' }
+      - name: Collect Linux RPM
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          cp out/make/rpm/x64/*.rpm dist/
+          rpm -K dist/*.rpm
+      - uses: actions/upload-artifact@v7
+        with:
+          name: installer-${{ matrix.variant }}-${{ runner.os }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: installer-*
+          merge-multiple: true
+          path: dist
+      - name: Publish installers and checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          tag="v${version}-desktop"
+          (cd dist && sha256sum *.exe *.rpm > SHA256SUMS.txt)
+          gh release create "$tag" dist/* --target "$GITHUB_SHA" --title "YouTube Desktop and Music ${version}" --notes-file .github/desktop-release-notes.md --latest

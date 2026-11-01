@@ -2,8 +2,9 @@
 name: Application Build
 
 on:
-  - push
-  - pull_request
+  push:
+    branches-ignore: ['release/desktop-*']
+  pull_request:
 
 jobs:
   build:

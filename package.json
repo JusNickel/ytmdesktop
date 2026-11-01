@@ -1,7 +1,7 @@
 {
   "name": "youtube-music-desktop-app",
   "productName": "YouTube Music Desktop App",
-  "version": "2.1.1",
+  "version": "2.1.4",
   "private": true,
   "description": "An unofficial cross platform desktop app for YouTube Music",
   "keywords": [],
@@ -21,9 +21,15 @@
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt --write",
     "typecheck": "tsc --noEmit",
-    "test:adblock": "node --test tests/adblock.test.cjs",
+    "test:adblock": "node --test tests/adblock.test.cjs tests/adblock-errors.test.cjs",
     "test:adblock:electron": "node node_modules/electron/cli.js tests/adblock-electron.cjs",
-    "test:adblock:packaged": "node node_modules/electron/cli.js tests/adblock-packaged.cjs"
+    "test:adblock:packaged": "node node_modules/electron/cli.js tests/adblock-packaged.cjs",
+    "make:fedora": "electron-forge make --targets=rpm",
+    "start:youtube": "node scripts/forge-youtube.mjs start",
+    "make:youtube:fedora": "node scripts/forge-youtube.mjs make --targets=rpm",
+    "test:youtube": "node --test tests/youtube-navigation.test.cjs tests/youtube-state.test.cjs tests/first-video.test.cjs tests/shorts-player.test.cjs tests/shorts-wheel.test.cjs",
+    "make:youtube:windows": "node scripts/forge-youtube.mjs make --platform=win32 --arch=x64 --targets=squirrel",
+    "make:windows": "electron-forge make --platform=win32 --arch=x64 --targets=squirrel"
   },
   "peerDependencies": {
     "electron-winstaller": "^5.4.0"

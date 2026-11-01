@@ -3,34 +3,7 @@ import IPCClient, { OPCode } from "./ipc";
 import { DiscordActivity } from "./types";
 import { randomUUID } from "crypto";
 import log from "electron-log";
-import { existsSync, statSync } from "node:fs";
-
-function directoryExists(dirPath: string): boolean {
-  try {
-    return existsSync(dirPath) && statSync(dirPath).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-function getIPCPath(id: number): string {
-  if (process.platform === "win32") {
-    return `\\\\?\\pipe\\discord-ipc-${id}`;
-  }
-
-  const dirtyPrefix = process.env.XDG_RUNTIME_DIR || process.env.TMPDIR || process.env.TMP || process.env.TEMP || "/tmp";
-  const prefix = dirtyPrefix.replace(/\/$/, "");
-  const discordSnapDir = "snap.discord";
-  const discordFlatpakDir = "com.discordapp.Discord";
-
-  if (directoryExists(`${prefix}/${discordSnapDir}`)) {
-    return `${prefix}/${discordSnapDir}/discord-ipc-${id}`;
-  } else if (directoryExists(`${prefix}/${discordFlatpakDir}`)) {
-    return `${prefix}/app/${discordFlatpakDir}/discord-ipc-${id}`;
-  } else {
-    return `${prefix}/discord-ipc-${id}`;
-  }
-}
+import { discordIPCPaths } from "./paths";
 
 export default class DiscordClient extends EventEmitter {
   private clientId: string | null = null;
@@ -52,11 +25,9 @@ export default class DiscordClient extends EventEmitter {
     // eslint-disable-next-line no-async-promise-executor
     this.connectionPromise = new Promise(async (resolve, reject) => {
       log.debug("dipc: initiated connection loop over 10 ids");
-      let id = 0;
-      while (id < 10) {
+      for (const ipcPath of discordIPCPaths()) {
         try {
           await new Promise<void>((ipcResolve, ipcReject) => {
-            const ipcPath = getIPCPath(id);
             log.debug("dipc: connecting to discord at", ipcPath);
             this.ipcClient.once("close", () => {
               this.ipcClient.removeAllListeners();
@@ -71,7 +42,7 @@ export default class DiscordClient extends EventEmitter {
               this.ipcClient.removeAllListeners();
               ipcResolve();
             });
-            this.ipcClient.connect(getIPCPath(id));
+            this.ipcClient.connect(ipcPath);
           });
 
           this.connected = true;
@@ -84,6 +55,7 @@ export default class DiscordClient extends EventEmitter {
           );
           this.emit("connect");
 
+          this.ipcClient.on("error", error => log.warn("Discord IPC connection error", error));
           this.ipcClient.on("close", () => {
             this.connected = false;
             this.emit("close");
@@ -106,7 +78,7 @@ export default class DiscordClient extends EventEmitter {
 
           return;
         } catch {
-          id++;
+          // Try the next native, Flatpak, or Vesktop socket.
         }
       }
 

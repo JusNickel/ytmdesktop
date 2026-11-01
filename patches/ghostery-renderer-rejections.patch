@@ -1,0 +1,42 @@
+diff --git a/dist/commonjs/index.js b/dist/commonjs/index.js
+--- a/dist/commonjs/index.js
++++ b/dist/commonjs/index.js
+@@ -169,11 +169,15 @@
+                 return;
+             }
+             if (styles.length > 0) {
+-                event.sender.insertCSS(styles, { cssOrigin: 'user' });
++                try {
++                    await event.sender.insertCSS(styles, { cssOrigin: 'user' });
++                } catch (error) {
++                    console.warn('@ghostery/adblocker stylesheet injection failed', error);
++                }
+             }
+             for (const script of scripts) {
+                 try {
+-                    event.sender.executeJavaScript(script, true);
++                    await event.sender.executeJavaScript(script, true);
+                 }
+                 catch (e) {
+                     console.error('@ghostery/adblocker scriptlet crashed', e);
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -128,11 +128,15 @@
+                 return;
+             }
+             if (styles.length > 0) {
+-                event.sender.insertCSS(styles, { cssOrigin: 'user' });
++                try {
++                    await event.sender.insertCSS(styles, { cssOrigin: 'user' });
++                } catch (error) {
++                    console.warn('@ghostery/adblocker stylesheet injection failed', error);
++                }
+             }
+             for (const script of scripts) {
+                 try {
+-                    event.sender.executeJavaScript(script, true);
++                    await event.sender.executeJavaScript(script, true);
+                 }
+                 catch (e) {
+                     console.error('@ghostery/adblocker scriptlet crashed', e);

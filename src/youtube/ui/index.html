@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:"
+    />
+    <title>YouTube Desktop</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="logo">▶</span><strong>YouTube <span>Desktop</span></strong>
+      </div>
+      <nav>
+        <button data-command="back" title="Back">←</button
+        ><button data-command="forward" title="Forward">→</button
+        ><button data-command="home" title="Home">⌂</button
+        ><button data-command="reload" title="Reload">↻</button>
+      </nav>
+      <div class="drag"></div>
+      <div class="tools">
+        <button id="settings-button" title="Settings">⚙</button
+        ><button
+          data-command="mini"
+          id="mini-button"
+          title="Floating mini player"
+        >
+          ▣</button
+        ><button data-command="minimize" title="Minimize">−</button
+        ><button data-command="maximize" title="Maximize or restore">□</button
+        ><button data-command="close" class="close" title="Close">×</button>
+      </div>
+    </header>
+    <main><div id="message"></div></main>
+    <footer>
+      <div class="track">
+        <div>
+          <strong id="title">Ready to watch</strong
+          ><span id="author">Find a video on YouTube</span>
+        </div>
+        <span id="status" class="badge">ADBLOCK ON</span>
+      </div>
+      <div class="player">
+        <button data-command="previous" title="Previous video">⏮</button
+        ><button
+          data-command="play"
+          id="play"
+          class="play"
+          title="Play / pause"
+        >
+          ▶</button
+        ><button data-command="next" title="Next video">⏭</button
+        ><span id="time">0:00</span
+        ><input
+          id="seek"
+          type="range"
+          min="0"
+          max="1"
+          value="0"
+          step="1"
+          aria-label="Playback position"
+        /><span id="duration">0:00</span
+        ><button data-command="mute" title="Mute / unmute">♫</button
+        ><input
+          id="volume"
+          type="range"
+          min="0"
+          max="1"
+          value="1"
+          step="0.05"
+          aria-label="Volume"
+        />
+      </div>
+    </footer>
+    <section id="settings" hidden>
+      <div class="settings-card">
+        <div class="settings-heading">
+          <span class="eyebrow">MAKE IT YOURS</span
+          ><button id="settings-close" title="Close settings">×</button>
+        </div>
+        <h1>Settings</h1>
+        <p class="intro">Your video, your desktop.</p>
+        <label class="setting"
+          ><span
+            ><strong>Block ads</strong
+            ><small>Network filtering and playback ad skipping</small></span
+          ><input id="adblock" type="checkbox"
+        /></label>
+        <label class="setting"
+          ><span
+            ><strong>Discord Rich Presence</strong
+            ><small
+              >Share the video title and channel while playing. Off when
+              paused.</small
+            ></span
+          ><input id="discord" type="checkbox"
+        /></label>
+        <p id="discord-status" class="connection">Discord: Off</p>
+        <label class="setting"
+          ><span
+            ><strong>Always on top</strong
+            ><small>Keep the full app above other windows</small></span
+          ><input id="alwaysOnTop" type="checkbox"
+        /></label>
+        <div class="mini-card">
+          <strong>Take your video with you</strong>
+          <p>
+            The floating player stays on top and keeps the same video playing.
+          </p>
+          <button data-command="mini" class="primary">
+            Open mini player ↗
+          </button>
+        </div>
+        <p class="hint">
+          Ctrl+M mini player · Ctrl+, settings · Alt+← back · Ctrl+Shift+T
+          always on top
+        </p>
+      </div>
+    </section>
+    <script type="module" src="./shell.ts"></script>
+  </body>
+</html>
